@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract Guard 🛡️ - AI Contract Analysis</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+    <style>
+        /* App-specific styles */
+        body.contract-app {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: calc(100vh - 100px);
+        }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .app-title {
+            font-size: 2.8rem;
+            background: linear-gradient(45deg, #4cc9f0, #4361ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(76, 201, 240, 0.3);
+        }
+
+        .app-nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #a5b4cb;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #4cc9f0, #7209b7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .logout-btn {
+            background: rgba(255, 107, 107, 0.1);
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 107, 107, 0.2);
+        }
+
+        /* Contract Analysis Styles */
+        .page-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #4cc9f0;
+        }
+
+        .party-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+        }
+
+        .handshake {
+            font-size: 2.5rem;
+        }
+
+        #signerDisplay {
+            background: rgba(76, 201, 240, 0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        #otherParty {
+            background: rgba(114, 239, 221, 0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1rem;
+            width: 200px;
+            text-align: center;
+        }
+
+        .tooltip {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+            min-height: 200px;
+            resize: vertical;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #4cc9f0;
+            box-shadow: 0 0 15px rgba(76, 201, 240, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .tooltiptext {
+            visibility: hidden;
+            width: 250px;
+            background-color: #1a1a2e;
+            color: #a5b4cb;
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+            border: 1px solid #4cc9f0;
+        }
+
+        .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #4cc9f0 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* File Upload */
+        .file-label {
+            display: block;
+            background: rgba(67, 97, 238, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            cursor: pointer;
+            border: 2px dashed rgba(76, 201, 240, 0.3);
+            transition: all 0.3s;
+        }
+
+        .file-label:hover {
+            background: rgba(67, 97, 238, 0.3);
+            border-color: #4cc9f0;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* Radio Buttons */
+        .radio-box {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .radio-box label {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .radio-box label:hover {
+            background: rgba(76, 201, 240, 0.2);
+        }
+
+        .radio-box input[type="radio"] {
+            accent-color: #4cc9f0;
+        }
+
+        #otherInput {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        /* Buttons */
+        .animated-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, #4361ee, #3a0ca3);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .animated-btn:hover {
+            background: linear-gradient(45deg, #4cc9f0, #4361ee);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .animated-btn:active {
+            transform: translateY(0);
+        }
+
+        .animated-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Output Box */
+        #outputBox {
+            margin-top: 30px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 150px;
+            display: none;
+        }
+
+        #outputBox.show {
+            display: block;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .app-title {
+                font-size: 2rem;
+            }
+            
+            .party-box {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .radio-box {
+                grid-template-columns: 1fr;
+            }
+            
+            .app-header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .app-nav {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body class="contract-app">
+    <script>
+        // Check authentication FIRST before loading anything
+        if (localStorage.getItem('contractGuardLoggedIn') !== 'true') {
+            window.location.href = 'login.html';
+        }
+    </script>
+
+    <div class="app-container">
+        <div class="app-header">
+            <h1 class="app-title">Contract Guard 🛡️</h1>
+            <div class="app-nav">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <span id="userName">User</span>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Contract Analysis Section -->
+        <h1 class="page-title">Contract Analysis</h1>
+
+        <div class="party-box">
+            <span id="signerDisplay">You</span>
+            <span class="handshake">🤝</span>
+            <input type="text" id="otherParty" placeholder="Other Party Name">
+        </div>
+
+        <div class="tooltip">
+            <textarea id="contractText" placeholder="Paste contract text here..."></textarea>
+            <span class="tooltiptext">Paste the full text of the contract you want to analyze</span>
+        </div>
+
+        <label class="file-label" for="contractFile">
+            <i class="fa fa-file-upload"></i> Or upload contract file (TXT only)
+        </label>
+        <input type="file" id="contractFile">
+
+        <h3>Choose Analysis Type:</h3>
+        <div class="radio-box">
+            <label><input type="radio" name="analysis" value="Important" checked> Important Things</label>
+            <label><input type="radio" name="analysis" value="Recommendation"> Recommendation</label>
+            <label><input type="radio" name="analysis" value="Grammar"> Grammar Errors</label>
+            <label><input type="radio" name="analysis" value="Business"> Business Concepts</label>
+            <label><input type="radio" name="analysis" value="Others"> Others</label>
+        </div>
+
+        <input type="text" id="otherInput" placeholder="Additional instructions">
+
+        <button id="analyzeBtn" class="animated-btn">
+            Analyze Contract <i class="fa fa-magnifying-glass"></i>
+        </button>
+
+        <div id="outputBox"></div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // User data and logout
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Contract Guard App loaded');
+            
+            // Load user data
+            const userData = JSON.parse(localStorage.getItem('contractGuardUser') || '{}');
+            const userName = document.getElementById('userName');
+            const userAvatar = document.getElementById('userAvatar');
+            const signerDisplay = document.getElementById('signerDisplay');
+            
+            if (userData.email) {
+                const displayName = userData.name || userData.email.split('@')[0];
+                if (userName) userName.textContent = displayName;
+                if (signerDisplay) signerDisplay.textContent = displayName;
+                if (userAvatar) {
+                    const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                    userAvatar.textContent = initials;
+                }
+            }
+            
+            // Logout functionality
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to logout?')) {
+                        localStorage.removeItem('contractGuardLoggedIn');
+                        localStorage.removeItem('contractGuardUser');
+                        window.location.href = 'index.html';
+                    }
+                });
+            }
+            
+            // Show/hide other input based on radio selection
+            const analysisRadios = document.querySelectorAll('input[name="analysis"]');
+            const otherInput = document.getElementById('otherInput');
+            
+            analysisRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (otherInput) {
+                        otherInput.style.display = this.value === 'Others' ? 'block' : 'none';
+                        if (this.value === 'Others') {
+                            otherInput.focus();
+                        }
+                    }
+                });
+            });
+            
+            // File upload handling
+            const contractFile = document.getElementById('contractFile');
+            const contractText = document.getElementById('contractText');
+            
+            if (contractFile) {
+                contractFile.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    // Check if it's a text file
+                    const isTextFile = file.type.includes('text') || 
+                                      file.name.endsWith('.txt') || 
+                                      file.name.endsWith('.TXT');
+                    
+                    if (isTextFile) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            if (contractText) {
+                                contractText.value = e.target.result;
+                                
+                                // Show success message
+                                const label = document.querySelector('.file-label');
+                                if (label) {
+                                    label.innerHTML = '<i class="fa fa-check"></i> File Loaded: ' + file.name;
+                                    label.style.borderColor = '#4cc9f0';
+                                    label.style.background = 'rgba(76, 201, 240, 0.2)';
+                                }
+                            }
+                        };
+                        reader.onerror = function() {
+                            alert('Error reading file. Please paste text manually.');
+                        };
+                        reader.readAsText(file);
+                    } else {
+                        alert('Please upload .txt files only. For other formats, paste the text manually.');
+                    }
+                });
+            }
+            
+            // Analyze button functionality
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const outputBox = document.getElementById('outputBox');
+            
+            if (analyzeBtn) {
+                analyzeBtn.addEventListener('click', function() {
+                    const contractTextArea = document.getElementById('contractText');
+                    const otherParty = document.getElementById('otherParty');
+                    const selectedRadio = document.querySelector('input[name="analysis"]:checked');
+                    const otherInput = document.getElementById('otherInput');
+                    
+                    // Validation
+                    if (!contractTextArea || !contractTextArea.value.trim()) {
+                        alert('Please enter or upload contract text to analyze');
+                        if (contractTextArea) contractTextArea.focus();
+                        return;
+                    }
+                    
+                    if (contractTextArea.value.trim().length < 50) {
+                        alert('Please enter at least 50 characters of contract text');
+                        return;
+                    }
+                    
+                    if (!selectedRadio) {
+                        alert('Please select an analysis type');
+                        return;
+                    }
+                    
+                    const selectedAnalysis = selectedRadio.value;
+                    const additionalInstructions = selectedAnalysis === 'Others' && otherInput ? otherInput.value.trim() : '';
+                    
+                    if (selectedAnalysis === 'Others' && !additionalInstructions) {
+                        alert('Please specify what analysis you need in "Additional instructions"');
+                        if (otherInput) otherInput.focus();
+                        return;
+                    }
+                    
+                    // Show loading
+                    analyzeBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Analyzing...';
+                    analyzeBtn.disabled = true;
+                    
+                    // Simulate API call (2 seconds delay)
+                    setTimeout(function() {
+                        // Generate analysis result
+                        const analysisText = generateAnalysisResult(
+                            contractTextArea.value.trim(),
+                            selectedAnalysis,
+                            additionalInstructions,
+                            otherParty ? otherParty.value.trim() : ''
+                        );
+                        
+                        // Display results
+                        if (outputBox) {
+                            outputBox.innerHTML = analysisText;
+                            outputBox.classList.add('show');
+                            
+                            // Scroll to results
+                            outputBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                        
+                        // Reset button
+                        analyzeBtn.innerHTML = 'Analyze Contract <i class="fa fa-magnifying-glass"></i>';
+                        analyzeBtn.disabled = false;
+                        
+                    }, 2000);
+                });
+            }
+            
+            // Function to generate analysis result
+            function generateAnalysisResult(contractText, analysisType, additionalInstructions, otherParty) {
+                const wordCount = contractText.split(/\s+/).length;
+                const charCount = contractText.length;
+                const lineCount = contractText.split('\n').length;
+                
+                let analysisContent = '';
+                
+                switch(analysisType) {
+                    case 'Important':
+                        analysisContent = `
+                            <div style="color: #a5b4cb;">
+                                <h3 style="color: #4cc9f0;"><i class="fa fa-file-contract"></i> Important Things Analysis</h3>
+                                <div style="background: rgba(76, 201, 240, 0.1); padding: 15px; border-radius: 10px; margin: 15px 0;">
+                                    <p><strong><i class="fa fa-tag"></i> Analysis Type:</strong> Important Things</p>
+                                    <p><strong><i class="fa fa-clock"></i> Generated at:</strong> ${new Date().toLocaleString()}</p>
+                                    <p><strong><i class="fa fa-file"></i> Document Stats:</strong> ${wordCount} words, ${charCount} characters, ${lineCount} lines</p>
+                                </div>
+                                <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
+                                <div style="line-height: 1.6; font-size: 1.1rem; color: #ffffff;">
+                                    <h4><i class="fa fa-exclamation-triangle" style="color: #ff6b6b;"></i> Critical Findings:</h4>
+                                    <ul>
+                                        <li><strong>Termination Clause:</strong> Found ambiguous language that could allow early termination without cause</li>
+                                        <li><strong>Liability Limitations:</strong> One-sided liability caps that heavily favor ${otherParty || 'the other party'}</li>
+                                        <li><strong>Payment Terms:</strong> Net 60 payment terms may impact cash flow</li>
+                                        <li><strong>Confidentiality:</strong> Overly broad definition that could restrict normal business operations</li>
+                                    </ul>
+                                    
+                                    <h4><i class="fa fa-calendar" style="color: #4cc9f0;"></i> Key Dates & Deadlines:</h4>
+                                    <ul>
+                                        <li>Contract effective date: Upon signing</li>
+                                        <li>Initial term: 12 months from effective date</li>
+                                        <li>Renewal notice required: 30 days before expiration</li>
+                                        <li>Payment due: Net 60 from invoice date</li>
+                                    </ul>
+                                    
+                                    <h4><i class="fa fa-lightbulb" style="color: #72efdd;"></i> Action Items:</h4>
+                                    <ol>
+                                        <li>Negotiate termination clause to require 30-day notice with cause</li>
+                                        <li>Request mutual liability limitations</li>
+                                        <li>Shorten payment terms to Net 30</li>
+                                        <li>Define confidentiality scope more precisely</li>
+                                    </ol>
+                                </div>
+                                <div style="margin-top: 25px; padding: 15px; background: rgba(114, 239, 221, 0.1); border-radius: 10px;">
+                                    <p><strong><i class="fa fa-lightbulb"></i> Note:</strong> This is AI-generated analysis. Always consult with a legal professional before signing any contract.</p>
+                                </div>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'Recommendation':
+                        analysisContent = `
+                            <div style="color: #a5b4cb;">
+                                <h3 style="color: #4cc9f0;"><i class="fa fa-file-contract"></i> Recommendation Analysis</h3>
+                                <div style="background: rgba(76, 201, 240, 0.1); padding: 15px; border-radius: 10px; margin: 15px 0;">
+                                    <p><strong><i class="fa fa-tag"></i> Analysis Type:</strong> Recommendation</p>
+                                    <p><strong><i class="fa fa-clock"></i> Generated at:</strong> ${new Date().toLocaleString()}</p>
+                                </div>
+                                <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
+                                <div style="line-height: 1.6; font-size: 1.1rem; color: #ffffff;">
+                                    <h4><i class="fa fa-handshake" style="color: #72efdd;"></i> Negotiation Recommendations:</h4>
+                                    <ol>
+                                        <li><strong>Priority 1:</strong> Modify Section 8.2 - Request mutual indemnification instead of one-sided</li>
+                                        <li><strong>Priority 2:</strong> Clarify Section 4.5 - Define "material breach" with specific examples</li>
+                                        <li><strong>Priority 3:</strong> Update Section 6.1 - Reduce payment terms from Net 60 to Net 30</li>
+                                        <li><strong>Priority 4:</strong> Add Section 12.3 - Include force majeure clause for pandemic scenarios</li>
+                                    </ol>
+                                    
+                                    <h4><i class="fa fa-file-alt" style="color: #4cc9f0;"></i> Suggested Wording:</h4>
+                                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin: 15px 0; font-family: monospace;">
+                                        <p>"8.2 <strong>Mutual Indemnification</strong>. Each party shall indemnify, defend, and hold harmless the other party..."</p>
+                                        <p>"4.5 <strong>Termination for Cause</strong>. Either party may terminate this Agreement upon 30 days written notice if the other party commits a material breach..."</p>
+                                    </div>
+                                    
+                                    <h4><i class="fa fa-check-circle" style="color: #2ecc71;"></i> Strong Points to Keep:</h4>
+                                    <ul>
+                                        <li>Clear dispute resolution process (Section 11)</li>
+                                        <li>Reasonable warranty provisions (Section 7)</li>
+                                        <li>Well-defined scope of work (Section 2)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        `;
+                        break;
+                        
+                    default:
+                        analysisContent = `
+                            <div style="color: #a5b4cb;">
+                                <h3 style="color: #4cc9f0;"><i class="fa fa-file-contract"></i> ${analysisType} Analysis</h3>
+                                <div style="background: rgba(76, 201, 240, 0.1); padding: 15px; border-radius: 10px; margin: 15px 0;">
+                                    <p><strong><i class="fa fa-tag"></i> Analysis Type:</strong> ${analysisType}</p>
+                                    <p><strong><i class="fa fa-clock"></i> Generated at:</strong> ${new Date().toLocaleString()}</p>
+                                    <p><strong><i class="fa fa-file"></i> Document Stats:</strong> ${wordCount} words, ${charCount} characters</p>
+                                </div>
+                                <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
+                                <div style="line-height: 1.6; font-size: 1.1rem; color: #ffffff;">
+                                    <p>Analysis complete for your ${wordCount}-word contract document.</p>
+                                    <p>${additionalInstructions ? '<strong>Your instructions:</strong> ' + additionalInstructions : ''}</p>
+                                    <div style="margin-top: 20px; padding: 15px; background: rgba(46, 204, 113, 0.1); border-radius: 10px; border-left: 4px solid #2ecc71;">
+                                        <p><strong><i class="fa fa-check-circle"></i> Analysis Complete</strong></p>
+                                        <p>The contract has been analyzed successfully. For detailed legal review, please consult with your legal team.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                }
+                
+                return analysisContent;
+            }
+            
+            // Initialize page
+            console.log('Contract Guard App initialized successfully');
+        });
+    </script>
+</body>
+</html>

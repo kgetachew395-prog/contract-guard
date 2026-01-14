@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract Guard | Secure Login</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+</head>
+<body class="contract-guard-app">
+    <!-- Simple navigation for login page -->
+    <nav style="position: fixed; top: 0; left: 0; right: 0; background: rgba(26, 26, 46, 0.9); padding: 15px 20px; z-index: 1000;">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+            <div class="logo" style="color: white;">
+                <i class="fas fa-shield-alt"></i>
+                <span>Contract<span style="color: #4cc9f0;">Guard</span></span>
+            </div>
+            <a href="index.html" style="color: #a5b4cb; text-decoration: none;">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </nav>
+
+    <!-- Login Container -->
+    <div class="login-container">
+        <h1 class="login-title">Contract Guard 🛡️</h1>
+        <p class="login-subtitle">Secure AI-Powered Contract Analysis Platform</p>
+        
+        <form id="loginForm" class="login-form">
+            <div class="input-group">
+                <i class="fas fa-user input-icon"></i>
+                <input type="email" class="login-input" id="loginEmail" placeholder="Email Address" required>
+            </div>
+            <div class="error-message" id="loginEmailError"></div>
+            
+            <div class="input-group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" class="login-input" id="loginPassword" placeholder="Password" required>
+            </div>
+            <div class="error-message" id="loginPasswordError"></div>
+            
+            <div class="remember-forgot">
+                <label class="remember-me">
+                    <input type="checkbox" id="rememberMe">
+                    <span>Remember me</span>
+                </label>
+                <a href="#" class="forgot-password" id="forgotPasswordLink">Forgot Password?</a>
+            </div>
+            
+            <button type="submit" class="login-btn" id="loginSubmitBtn">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+            
+            <div class="divider">
+                <span>Or continue with</span>
+            </div>
+            
+            <div class="social-login">
+                <button type="button" class="social-btn" title="Sign in with Google">
+                    <i class="fab fa-google"></i>
+                </button>
+                <button type="button" class="social-btn" title="Sign in with Microsoft">
+                    <i class="fab fa-microsoft"></i>
+                </button>
+                <button type="button" class="social-btn" title="Sign in with GitHub">
+                    <i class="fab fa-github"></i>
+                </button>
+            </div>
+            
+            <p class="signup-link">
+                Don't have an account?
+                <a href="#" id="signupLink">Sign up now</a>
+            </p>
+            
+            <div class="security-note">
+                <i class="fas fa-shield-alt"></i>
+                <span>Your data is protected with enterprise-grade encryption and security protocols.</span>
+            </div>
+        </form>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/auth.js"></script>
+    <script>
+        // Simple login page initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Login page loaded');
+            
+            // Check if already logged in
+            const isLoggedIn = localStorage.getItem('contractGuardLoggedIn');
+            if (isLoggedIn === 'true') {
+                // Redirect to main app if already logged in
+                window.location.href = 'app.html';
+                return;
+            }
+            
+            // Login form handler
+            const loginForm = document.getElementById('loginForm');
+            const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+            
+            if (loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const email = document.getElementById('loginEmail').value.trim();
+                    const password = document.getElementById('loginPassword').value.trim();
+                    
+                    // Basic validation
+                    if (!email || !password) {
+                        alert('Please enter both email and password');
+                        return;
+                    }
+                    
+                    // Email validation
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(email)) {
+                        alert('Please enter a valid email address');
+                        return;
+                    }
+                    
+                    // Show loading
+                    const originalText = loginSubmitBtn.innerHTML;
+                    loginSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+                    loginSubmitBtn.disabled = true;
+                    
+                    // Simulate login (2 seconds delay)
+                    setTimeout(function() {
+                        console.log('Login successful for:', email);
+                        
+                        // Save login state
+                        localStorage.setItem('contractGuardLoggedIn', 'true');
+                        localStorage.setItem('contractGuardUser', JSON.stringify({
+                            email: email,
+                            name: email.split('@')[0],
+                            timestamp: new Date().toISOString()
+                        }));
+                        
+                        // Show success message
+                        alert('Login successful! Redirecting to Contract Guard...');
+                        
+                        // Redirect to main app
+                        window.location.href = 'app.html';
+                        
+                        // Reset button (though redirect happens)
+                        loginSubmitBtn.innerHTML = originalText;
+                        loginSubmitBtn.disabled = false;
+                    }, 2000);
+                });
+            }
+            
+            // Sign up link
+            const signupLink = document.getElementById('signupLink');
+            if (signupLink) {
+                signupLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('For demo purposes, use any email and password to login.');
+                });
+            }
+            
+            // Forgot password link
+            const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+            if (forgotPasswordLink) {
+                forgotPasswordLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const email = prompt('Enter your email to reset password:');
+                    if (email) {
+                        alert(`Password reset link sent to ${email} (demo mode)`);
+                    }
+                });
+            }
+            
+            // Social login buttons
+            document.querySelectorAll('.social-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const iconClass = this.querySelector('i').className;
+                    const platform = iconClass.includes('google') ? 'Google' : 
+                                   iconClass.includes('microsoft') ? 'Microsoft' : 'GitHub';
+                    alert(`${platform} login integration coming soon!`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

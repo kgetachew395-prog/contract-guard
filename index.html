@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ContractGuard 🛡️ - Secure Your Contracts</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Simple auth check */
+        .auth-check {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>Contract<span class="logo-highlight">Guard</span></span>
+            </div>
+            
+            <div class="nav-links">
+                <a href="index.html" class="active"><i class="fas fa-home"></i> Home</a>
+                <a href="#features"><i class="fas fa-star"></i> Features</a>
+                <a href="#how-it-works"><i class="fas fa-play-circle"></i> How it Works</a>
+                <a href="#pricing"><i class="fas fa-tag"></i> Pricing</a>
+                <div class="nav-buttons">
+                    <a href="login.html" class="btn btn-outline">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </a>
+                    <a href="login.html" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Get Started
+                    </a>
+                </div>
+            </div>
+            
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Don't Sign Blindly.<br>
+                    <span class="gradient-text">AI-Powered Contract Analysis</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Upload contracts, identify red flags, and get actionable insights with Gemini AI.
+                    Protect your organization from hidden risks and unfavorable terms.
+                </p>
+                <div class="hero-cta">
+                    <a href="login.html" class="btn btn-primary btn-lg" id="getStartedBtn">
+                        <i class="fas fa-rocket"></i> Start Free Analysis
+                    </a>
+                    <a href="#demo" class="btn btn-outline btn-lg">
+                        <i class="fas fa-play"></i> Watch Demo
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">10,000+</span>
+                        <span class="stat-label">Contracts Analyzed</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">99.2%</span>
+                        <span class="stat-label">Accuracy Rate</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">500+</span>
+                        <span class="stat-label">Organizations Trust Us</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="dashboard-preview">
+                    <div class="preview-header">
+                        <div class="preview-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                    <div class="preview-content">
+                        <div class="analysis-result">
+                            <div class="result-header">
+                                <i class="fas fa-file-contract"></i>
+                                <h4>Contract Analysis Result</h4>
+                            </div>
+                            <div class="result-item critical">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>3 Critical Issues Found</span>
+                            </div>
+                            <div class="result-item warning">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span>8 Warnings Identified</span>
+                            </div>
+                            <div class="result-item success">
+                                <i class="fas fa-check-circle"></i>
+                                <span>12 Clauses Approved</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Why Choose ContractGuard?</h2>
+                <p class="section-subtitle">Enterprise-grade contract analysis powered by Gemini AI</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>AI-Powered Analysis</h3>
+                    <p>Gemini AI scans contracts for hidden risks, ambiguous language, and unfavorable terms with 99% accuracy.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-flag"></i>
+                    </div>
+                    <h3>Red Flag Detection</h3>
+                    <p>Identifies critical issues, potential legal problems, and clauses that could harm your organization.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Custom Rules Engine</h3>
+                    <p>Set your organization-specific rules and compliance requirements for tailored analysis.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-export"></i>
+                    </div>
+                    <h3>Export & Reports</h3>
+                    <p>Generate detailed PDF reports with actionable recommendations for contract improvements.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Team Collaboration</h3>
+                    <p>Share analysis results with your legal team and stakeholders with role-based access.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h3>Version History</h3>
+                    <p>Track all contract revisions and maintain complete audit trails for compliance.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Protect Your Contracts?</h2>
+                <p>Join thousands of organizations that trust ContractGuard for secure contract analysis.</p>
+                <a href="login.html" class="btn btn-primary btn-xl">
+                    <i class="fas fa-shield-alt"></i> Start Free Trial
+                </a>
+                <p class="cta-note">No credit card required • 10 free analyses • Cancel anytime</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Contract<span class="logo-highlight">Guard</span></span>
+                    </div>
+                    <p class="footer-description">
+                        AI-powered contract analysis platform that helps organizations identify risks and secure better deals.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Landing page loaded');
+            
+            // Mobile menu toggle
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const navLinks = document.querySelector('.nav-links');
+            
+            if (mobileMenuBtn && navLinks) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    navLinks.classList.toggle('show');
+                });
+            }
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href === '#') return;
+                    
+                    if (href.startsWith('#')) {
+                        e.preventDefault();
+                        const targetElement = document.querySelector(href);
+                        if (targetElement) {
+                            window.scrollTo({
+                                top: targetElement.offsetTop - 80,
+                                behavior: 'smooth'
+                            });
+                            
+                            // Close mobile menu if open
+                            if (navLinks.classList.contains('show')) {
+                                navLinks.classList.remove('show');
+                            }
+                        }
+                    }
+                });
+            });
+            
+            // Check if user is already logged in (for demo)
+            const isLoggedIn = localStorage.getItem('contractGuardLoggedIn');
+            const getStartedBtn = document.getElementById('getStartedBtn');
+            
+            if (isLoggedIn === 'true' && getStartedBtn) {
+                getStartedBtn.innerHTML = '<i class="fas fa-tachometer-alt"></i> Go to Dashboard';
+                getStartedBtn.href = 'app.html';
+            }
+        });
+    </script>
+</body>
+</html>
